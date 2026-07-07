@@ -2,11 +2,43 @@
 
 
 class WeatherService{
-    - analizadorClima : AnalizadorClima
-    - obtenerClimaActual(fecha : LocalDate) : Clima
-    - obtenerClima() : ClimaDTO
-    - analizarClima(clima) : void
+    - analizadores : Analizador[]
+
+    ' analiza para cada lugar, su clima.
+    + analizarClimas() : void
     - guardarClima(clima) : void
+}
+
+' tiene los lugares y a quien alarmar
+class Analizador{
+
+    - lugares : Lugar
+    - alertadores : Alertador[]
+    - criterio : CriterioAlarma
+    ' analiza si es alarmante el clima, dispara las alarmas
+    + analizarClima(Clima clima) : void
+}
+
+WeatherService --> Analizador
+
+Analizador --> Alertador
+Analizador --> CriterioAlarma
+
+Interface CriterioAlarma{
+    + esAlarmante(Clima clima) : bool
+}
+
+Class CriterioMayorTemperaturaHumedad extends CriterioAlarma{
+    - temperatura : Double
+    - humedad : Double
+    + esAlarmante(clima) : Bool
+}
+
+WeatherService --> WeatherApiClient
+
+class WeatherApiClient{
+    obtenerClima(String lugar)
+
 }
 
 class AnalizadorClima{
@@ -15,10 +47,6 @@ class AnalizadorClima{
 
 WeatherService --> AnalizadorClima
 
-class AlertService{
-- alertadores : Alertadores
-- enviarAlerta()
-}
 interface Alertador{
 - enviarAlerta()
 }
@@ -27,15 +55,12 @@ class MailAlertador extends Alertador {
 - mailDestino : String
 - enviarAlerta()
 }
-
+MailAlertador --> MailService
 ' manda los mails
 class MailService{
 - provider?
 - enviarMail(direccion: string, contenido : String)
 }
 
-AlertService --* Alertador
-AlertService --- MailService
-WeatherService --- AlertService
 
 @enduml
