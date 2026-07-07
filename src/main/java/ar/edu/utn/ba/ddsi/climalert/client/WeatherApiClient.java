@@ -12,15 +12,18 @@ public class WeatherApiClient {
 
 
     public WeatherApiClient(@Value("${OPENWEATHER_API_KEY}") String apiKey) {
+        this(apiKey, RestClient.builder().baseUrl("http://api.weatherapi.com/v1").build());
+    }
+
+    // Visible para tests: permite inyectar un RestClient de prueba (MockRestServiceServer).
+    WeatherApiClient(String apiKey, RestClient restClient) {
         this.apiKey = apiKey == null ? "" : apiKey.trim();
-        this.restClient = RestClient.builder()
-                .baseUrl("http://api.weatherapi.com/v1")
-                .build();
+        this.restClient = restClient;
     }
 
     public Clima obtenerClima(String lugar) {
         WeatherApiResponse weatherApiResponse = restClient.get()
-                .uri("/current.json?key={key}&q="+ lugar +"&aqi=no", apiKey)
+                .uri("/current.json?key={key}&q={q}&aqi=no", apiKey, lugar)
                 .retrieve()
                 .body(WeatherApiResponse.class);
 
@@ -28,17 +31,16 @@ public class WeatherApiClient {
             throw new IllegalStateException("No se pudo obtener el clima actual");
         }
 
-
-        Lugar lugar = new Lugar(
+        Lugar ubicacion = new Lugar(
                 weatherApiResponse.location().name(),
                 weatherApiResponse.location().lat(),
                 weatherApiResponse.location().lon()
         );
 
         return new Clima(
-                lugar.nombre(),
-                lugar.latitud(),
-                lugar.longitud(),
+                ubicacion.nombre(),
+                ubicacion.latitud(),
+                ubicacion.longitud(),
                 weatherApiResponse.current().temp_c(),
                 weatherApiResponse.current().humidity() == null ? null : weatherApiResponse.current().humidity().doubleValue()
         );

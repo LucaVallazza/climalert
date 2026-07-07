@@ -4,7 +4,7 @@
 class WeatherService{
     - analizadores : Analizador[]
 
-    ' analiza para cada lugar, su clima.
+    ' analiza para cada analizador, su climas
     + analizarClimas() : void
     - guardarClima(clima) : void
 }
