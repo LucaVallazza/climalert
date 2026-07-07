@@ -14,7 +14,7 @@ class Analizador{
 
     - lugares : Lugar
     - alertadores : Alertador[]
-    - criterio : CriterioAlarma
+    - criterios : CriterioAlarma[]
     ' analiza si es alarmante el clima, dispara las alarmas
     + analizarClima(Clima clima) : void
 }
@@ -28,9 +28,9 @@ Interface CriterioAlarma{
     + esAlarmante(Clima clima) : bool
 }
 
-Class CriterioMayorTemperaturaHumedad extends CriterioAlarma{
-    - temperatura : Double
-    - humedad : Double
+Class CriterioMayorTemperaturaHumedad implements CriterioAlarma{
+    - temperaturaAlarmante : Double
+    - humedadAlarmante : Double
     + esAlarmante(clima) : Bool
 }
 
@@ -51,11 +51,12 @@ interface Alertador{
 - enviarAlerta()
 }
 
-class MailAlertador extends Alertador {
+class AlertadorMail implements Alertador {
+- mail : String
 - mailDestino : String
 - enviarAlerta()
 }
-MailAlertador --> MailService
+AlertadorMail --> MailService
 ' manda los mails
 class MailService{
 - provider?
