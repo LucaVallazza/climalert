@@ -15,7 +15,7 @@ public class AlertadorMail implements Alertador{
     }
 
     @Override
-    public void enviarAlerta() {
-        mailService.enviarMail(mail);
+    public void enviarAlerta(String mensaje) {
+        mailService.enviarMail(mail , mensaje);
     }
 }

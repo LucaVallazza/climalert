@@ -8,4 +8,9 @@ public class CriterioMayorTemperaturaHumedad implements CriterioAlarma{
     public Boolean esAlarmante(Clima clima) {
         return clima.humidity() > humedadAlarmante && clima.temperatura() > temperaturaAlarmante;
     }
+
+    @Override
+    public String crearMensajeAlerta(Clima clima) {
+        return "La temperatura superó los " + temperaturaAlarmante + " grados y la humedad es mayor a " + humedadAlarmante;
+    }
 }

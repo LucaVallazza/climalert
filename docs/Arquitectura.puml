@@ -12,26 +12,40 @@ class WeatherService{
 ' tiene los lugares y a quien alarmar
 class Analizador{
 
-    - lugares : Lugar
-    - alertadores : Alertador[]
-    - criterios : CriterioAlarma[]
-    ' analiza si es alarmante el clima, dispara las alarmas
-    + analizarClima(Clima clima) : void
+    - nombreLugar : String
+    - suscriptores : Suscriptor[]
+    ' le pasa a todos los suscriptores el clima, y cada suscriptor evalua con SUS criterios y hace SUS alarmas
+    + reportarClima(Clima clima) : void
 }
+
+Analizador --> Suscriptor
+Class Suscriptor{
+    criterios : CriterioAlarma[]
+    alertadores : Alertador[]
+
+    + notificarClima(Clima clima)
+    - analizarClima(Clima clima)
+    - cumpleCriterios(Clima clima) : bool
+    - alertar(Clima clima) : void
+}
+
 
 WeatherService --> Analizador
 
-Analizador --> Alertador
-Analizador --> CriterioAlarma
+Suscriptor --> Alertador
+Suscriptor --> CriterioAlarma
 
 Interface CriterioAlarma{
+
     + esAlarmante(Clima clima) : bool
+    + mensajeAlarma(Clima clima) : String
 }
 
 Class CriterioMayorTemperaturaHumedad implements CriterioAlarma{
     - temperaturaAlarmante : Double
     - humedadAlarmante : Double
-    + esAlarmante(clima) : Bool
+    + esAlarmante(Clima clima) : Bool
+    + mensajeAlarma(Clima clima) : String
 }
 
 WeatherService --> WeatherApiClient
@@ -41,20 +55,15 @@ class WeatherApiClient{
 
 }
 
-class AnalizadorClima{
-    - climaEsAlerta(clima: Clima) : bool
-}
-
-WeatherService --> AnalizadorClima
-
 interface Alertador{
-- enviarAlerta()
++ enviarAlerta(String mensaje)
 }
 
 class AlertadorMail implements Alertador {
+- mailService : MailService
 - mail : String
 - mailDestino : String
-- enviarAlerta()
++ enviarAlerta(String mensaje)
 }
 AlertadorMail --> MailService
 ' manda los mails

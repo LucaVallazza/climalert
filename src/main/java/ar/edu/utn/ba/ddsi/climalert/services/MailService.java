@@ -6,7 +6,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class MailService {
 
-    public void enviarMail(String direccion){
-        System.out.println("Enviar mail a :" + direccion);
+    public void enviarMail(String direccion, String mensaje){
+        System.out.println("Enviar mail a :" + direccion + " con mensaje: " + mensaje);
+
     }
 }
