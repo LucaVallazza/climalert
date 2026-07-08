@@ -27,7 +27,6 @@ class MailServiceTest {
     @Test
     void enviarMailNoTieneEnvioRealTodaviaYSoloLoguea() {
         // Este test documenta el estado actual (stub): no hay integración real de correo.
-        // Ver TODO de la conversación: falta reemplazar esto por un envío real (JavaMailSender).
         new MailService().enviarMail("admin@clima.com", "temperatura y humedad altas");
 
         assertThat(capturado.toString())

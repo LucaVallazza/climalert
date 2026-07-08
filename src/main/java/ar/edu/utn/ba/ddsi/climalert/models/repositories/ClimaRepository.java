@@ -15,11 +15,14 @@ public class ClimaRepository {
         climas.add(clima);
     }
 
-    public Optional<Clima> obtenerUltimo() {
-        if (climas.isEmpty()) {
-            return Optional.empty();
+    public Optional<Clima> obtenerUltimo(String lugar) {
+        for (int i = climas.size() - 1; i >= 0; i--) {
+            Clima clima = climas.get(i);
+            if (clima.ubicacion().equals(lugar)) {
+                return Optional.of(clima);
+            }
         }
-        return Optional.of(climas.get(climas.size() - 1));
+        return Optional.empty();
     }
 
     public ArrayList<Clima> obtenerTodos() {

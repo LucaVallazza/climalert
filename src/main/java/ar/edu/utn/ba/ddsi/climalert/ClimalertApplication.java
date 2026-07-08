@@ -7,6 +7,8 @@ import ar.edu.utn.ba.ddsi.climalert.models.entities.Analizador;
 import ar.edu.utn.ba.ddsi.climalert.models.entities.CriterioAlarma;
 import ar.edu.utn.ba.ddsi.climalert.models.entities.CriterioMayorTemperaturaHumedad;
 import ar.edu.utn.ba.ddsi.climalert.models.entities.Suscriptor;
+import ar.edu.utn.ba.ddsi.climalert.models.repositories.ClimaRepository;
+import ar.edu.utn.ba.ddsi.climalert.services.AlertService;
 import ar.edu.utn.ba.ddsi.climalert.services.MailService;
 import ar.edu.utn.ba.ddsi.climalert.services.WeatherService;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +34,9 @@ public class ClimalertApplication {
 	}
 
 	@Bean
-	public Analizador analizadorBuenosAires(WeatherApiClient weatherApiClient, WeatherService weatherService, MailService mailService) {
+	public Analizador analizadorBuenosAires(ClimaRepository climaRepository, WeatherService weatherService, AlertService alertService, MailService mailService) {
+		weatherService.agregarLugar("Buenos Aires");
+
 		ArrayList<Alertador> alertadores = new ArrayList<>(List.of(
 				new AlertadorMail("admin@clima.com", mailService),
 				new AlertadorMail("emergencias@clima.com", mailService),
@@ -43,8 +47,8 @@ public class ClimalertApplication {
 		));
 		Suscriptor suscriptor = new Suscriptor(criterios, alertadores);
 
-		Analizador analizador = new Analizador("Buenos Aires", new ArrayList<>(List.of(suscriptor)), weatherApiClient);
-		weatherService.agregarAnalizador(analizador);
+		Analizador analizador = new Analizador("Buenos Aires", new ArrayList<>(List.of(suscriptor)), climaRepository);
+		alertService.agregarAnalizador(analizador);
 		return analizador;
 	}
 
