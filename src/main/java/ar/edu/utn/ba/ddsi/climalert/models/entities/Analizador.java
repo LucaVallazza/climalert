@@ -15,8 +15,9 @@ public class Analizador {
         this.weatherApiClient = weatherApiClient;
     }
 
-    public void reportarClima(){
+    public Clima reportarClima(){
         Clima clima = weatherApiClient.obtenerClima(nombreLugar);
         suscriptores.stream().forEach(suscriptor -> suscriptor.notificarClima(clima));
+        return clima;
     }
 }

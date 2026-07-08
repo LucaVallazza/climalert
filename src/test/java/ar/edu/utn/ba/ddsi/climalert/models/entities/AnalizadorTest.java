@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,18 +23,19 @@ class AnalizadorTest {
     private Suscriptor suscriptor;
 
     @Test
-    void reportarClimaConsultaElClimaDelLugarYNotificaATodosLosSuscriptores() {
-        Clima clima = new Clima("CABA", -34.6, -58.4, 36.0, 61.0);
-        when(weatherApiClient.obtenerClima("CABA")).thenReturn(clima);
+    void reportarClimaConsultaElClimaDelLugarLoDevuelveYNotificaATodosLosSuscriptores() {
+        Clima clima = new Clima("Buenos Aires", -34.6, -58.4, 36.0, 61.0);
+        when(weatherApiClient.obtenerClima("Buenos Aires")).thenReturn(clima);
 
         Analizador analizador = new Analizador(
-                "CABA",
+                "Buenos Aires",
                 new ArrayList<>(List.of(suscriptor)),
                 weatherApiClient
         );
 
-        analizador.reportarClima();
+        Clima climaReportado = analizador.reportarClima();
 
+        assertThat(climaReportado).isEqualTo(clima);
         verify(suscriptor).notificarClima(clima);
     }
 }
