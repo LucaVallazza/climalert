@@ -10,10 +10,6 @@ public class AlertadorMail implements Alertador{
         this.mailService = mailService;
     }
 
-    public AlertadorMail(String mail) {
-        this.mail = mail;
-    }
-
     @Override
     public void enviarAlerta(String mensaje) {
         mailService.enviarMail(mail , mensaje);

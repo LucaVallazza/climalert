@@ -30,7 +30,7 @@ public class Suscriptor {
                 .forEach(alertador -> {
                     String mensaje = criterios.stream()
                             .map(criterio -> criterio.crearMensajeAlerta(clima))
-                            .collect(Collectors.joining("/n"));
+                            .collect(Collectors.joining("\n"));
                     alertador.enviarAlerta(mensaje);
                 });
     }
