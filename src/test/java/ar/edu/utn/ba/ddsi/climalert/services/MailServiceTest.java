@@ -1,36 +1,25 @@
 package ar.edu.utn.ba.ddsi.climalert.services;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import ar.edu.utn.ba.ddsi.climalert.providers.EmailProvider;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import static org.mockito.Mockito.verify;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+@ExtendWith(MockitoExtension.class)
 class MailServiceTest {
 
-    private final PrintStream stdOutOriginal = System.out;
-    private final ByteArrayOutputStream capturado = new ByteArrayOutputStream();
-
-    @BeforeEach
-    void redirigirSalida() {
-        System.setOut(new PrintStream(capturado));
-    }
-
-    @AfterEach
-    void restaurarSalida() {
-        System.setOut(stdOutOriginal);
-    }
+    @Mock
+    private EmailProvider emailProvider;
 
     @Test
-    void enviarMailNoTieneEnvioRealTodaviaYSoloLoguea() {
-        // Este test documenta el estado actual (stub): no hay integración real de correo.
-        new MailService().enviarMail("admin@clima.com", "temperatura y humedad altas");
+    void enviarMailDelegaEnElEmailProviderConAsuntoFijo() {
+        MailService mailService = new MailService(emailProvider);
 
-        assertThat(capturado.toString())
-                .contains("admin@clima.com")
-                .contains("temperatura y humedad altas");
+        mailService.enviarMail("admin@clima.com", "temperatura y humedad altas");
+
+        verify(emailProvider).enviar("admin@clima.com", "Alerta climatica - Climalert", "temperatura y humedad altas");
     }
 }
