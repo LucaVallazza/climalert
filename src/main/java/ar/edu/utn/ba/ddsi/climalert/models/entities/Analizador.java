@@ -1,21 +1,22 @@
 package ar.edu.utn.ba.ddsi.climalert.models.entities;
 
-import ar.edu.utn.ba.ddsi.climalert.models.records.Lugar;
+import ar.edu.utn.ba.ddsi.climalert.models.repositories.ClimaRepository;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Analizador {
-    private Lugar lugar;
-    private ArrayList<Alertador> alertadores;
-    private ArrayList<CriterioAlarma> criterios;
+    private String nombreLugar;
+    private ArrayList<Suscriptor> suscriptores;
+    private ClimaRepository climaRepository;
 
-    public void analizarClima(Clima clima){
-        if(criterios.stream().
-                allMatch(criterio -> criterio.esAlarmante(clima))
-        ){
-            alertadores.stream().forEach(alertador -> alertador.enviarAlerta());
-        }
+    public Analizador(String nombreLugar, ArrayList<Suscriptor> suscriptores, ClimaRepository climaRepository) {
+        this.nombreLugar = nombreLugar;
+        this.suscriptores = suscriptores;
+        this.climaRepository = climaRepository;
     }
 
+    public void analizar(){
+        climaRepository.obtenerUltimo(nombreLugar)
+                .ifPresent(clima -> suscriptores.forEach(suscriptor -> suscriptor.notificarClima(clima)));
+    }
 }

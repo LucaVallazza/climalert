@@ -2,7 +2,8 @@ package ar.edu.utn.ba.ddsi.climalert.models.entities;
 
 public record Clima(String ubicacion, Double latitud, Double longitud, Double temperatura, Double humidity) {
 
-  public boolean esAlarmante() {
-    return temperatura != null && temperatura > 35 && humidity != null && humidity > 60;
-  }
+    public String detalle() {
+        return "Ubicación: %s (lat %.2f, lon %.2f)\nTemperatura: %.1f°C\nHumedad: %.1f%%"
+                .formatted(ubicacion, latitud, longitud, temperatura, humidity);
+    }
 }

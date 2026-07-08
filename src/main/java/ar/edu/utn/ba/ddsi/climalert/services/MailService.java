@@ -1,12 +1,18 @@
 package ar.edu.utn.ba.ddsi.climalert.services;
 
+import ar.edu.utn.ba.ddsi.climalert.providers.EmailProvider;
 import org.springframework.stereotype.Service;
 
-// Se comunica con los mails
 @Service
 public class MailService {
 
-    public void enviarMail(String direccion){
-        System.out.println("Enviar mail a :" + direccion);
+    private final EmailProvider emailProvider;
+
+    public MailService(EmailProvider emailProvider) {
+        this.emailProvider = emailProvider;
+    }
+
+    public void enviarMail(String direccion, String mensaje){
+        emailProvider.enviar(direccion, "Alerta climatica - Climalert", mensaje);
     }
 }

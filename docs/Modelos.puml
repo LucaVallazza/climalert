@@ -1,12 +1,81 @@
 @startuml
 
-class AnalizadorClima{
+' modelo de dominio (ar.edu.utn.ba.ddsi.climalert.models.*)
 
-    climaEsAlerta(clima:Clima):bool
+class Clima <<record>> {
+    ubicacion : String
+    latitud : Double
+    longitud : Double
+    temperatura : Double
+    humidity : Double
+
+    ' arma el texto con todos los datos del clima, usado en el cuerpo del mail de alerta
+    + detalle() : String
 }
 
-class Clima{
-
+class Lugar <<record>> {
+    nombre : String
+    latitud : double
+    longitud : double
 }
+
+class Analizador {
+    - nombreLugar : String
+    - suscriptores : Suscriptor[]
+    - climaRepository : ClimaRepository
+
+    ' busca el ultimo clima guardado de su lugar y se lo reporta a sus suscriptores
+    + analizar() : void
+}
+
+class Suscriptor {
+    - criterios : CriterioAlarma[]
+    - alertadores : Alertador[]
+
+    ' le llega el clima, evalua con SUS criterios y dispara SUS alertadores
+    + notificarClima(clima : Clima) : void
+    - analizarClima(clima : Clima) : void
+    - cumpleCriterios(clima : Clima) : Boolean
+    - alertarATodos(clima : Clima) : void
+}
+
+interface CriterioAlarma {
+    + esAlarmante(clima : Clima) : Boolean
+    + crearMensajeAlerta(clima : Clima) : String
+}
+
+class CriterioMayorTemperaturaHumedad implements CriterioAlarma {
+    - temperaturaAlarmante : Double
+    - humedadAlarmante : Double
+    + esAlarmante(clima : Clima) : Boolean
+    + crearMensajeAlerta(clima : Clima) : String
+}
+
+interface Alertador {
+    + enviarAlerta(mensaje : String) : void
+}
+
+class AlertadorMail implements Alertador {
+    - mail : String
+    - mailService : MailService
+    + enviarAlerta(mensaje : String) : void
+}
+
+class ClimaRepository {
+    - climas : Clima[]
+    + guardar(clima : Clima) : void
+    + obtenerUltimo(lugar : String) : Optional<Clima>
+    + obtenerTodos() : Clima[]
+}
+
+Analizador --> ClimaRepository
+Analizador --> "*" Suscriptor
+Suscriptor --> "*" Alertador
+Suscriptor --> "*" CriterioAlarma
+ClimaRepository --> "*" Clima
+AlertadorMail ..> MailService
+
+CriterioMayorTemperaturaHumedad ..> Clima
+Analizador ..> Clima
 
 @enduml
