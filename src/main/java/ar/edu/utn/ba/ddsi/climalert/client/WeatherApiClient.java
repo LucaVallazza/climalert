@@ -3,7 +3,6 @@ package ar.edu.utn.ba.ddsi.climalert.client;
 import ar.edu.utn.ba.ddsi.climalert.dtos.WeatherApiResponse;
 import ar.edu.utn.ba.ddsi.climalert.models.entities.Clima;
 import ar.edu.utn.ba.ddsi.climalert.models.records.Lugar;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestClient;
 
 public class WeatherApiClient {
@@ -11,7 +10,7 @@ public class WeatherApiClient {
     private final RestClient restClient;
 
 
-    public WeatherApiClient(@Value("${OPENWEATHER_API_KEY}") String apiKey) {
+    public WeatherApiClient(String apiKey) {
         this(apiKey, RestClient.builder().baseUrl("http://api.weatherapi.com/v1").build());
     }
 
