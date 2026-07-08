@@ -1,0 +1,133 @@
+@startuml
+
+' ==== servicios (polling / scheduling) ====
+
+class WeatherService {
+    - lugares : String[]
+    - weatherApiClient : WeatherApiClient
+    - climaRepository : ClimaRepository
+
+    + agregarLugar(lugar : String) : void
+    ' @Scheduled cada 5 minutos: pide el clima de cada lugar y lo guarda
+    + obtenerYGuardarClimas() : void
+    + guardarClima(clima : Clima) : void
+}
+
+class AlertService {
+    - analizadores : Analizador[]
+
+    + agregarAnalizador(analizador : Analizador) : void
+    ' @Scheduled cada 1 minuto: le pide a cada analizador que analice
+    + analizarClimas() : void
+}
+
+WeatherService --> WeatherApiClient
+WeatherService --> ClimaRepository
+AlertService --> "*" Analizador
+
+' ==== modelo de dominio ====
+
+class Analizador {
+    - nombreLugar : String
+    - suscriptores : Suscriptor[]
+    - climaRepository : ClimaRepository
+
+    + analizar() : void
+}
+
+Analizador --> ClimaRepository
+Analizador --> "*" Suscriptor
+
+class Suscriptor {
+    - criterios : CriterioAlarma[]
+    - alertadores : Alertador[]
+
+    + notificarClima(clima : Clima) : void
+    - analizarClima(clima : Clima) : void
+    - cumpleCriterios(clima : Clima) : Boolean
+    - alertarATodos(clima : Clima) : void
+}
+
+Suscriptor --> "*" Alertador
+Suscriptor --> "*" CriterioAlarma
+
+interface CriterioAlarma {
+    + esAlarmante(clima : Clima) : Boolean
+    + crearMensajeAlerta(clima : Clima) : String
+}
+
+class CriterioMayorTemperaturaHumedad implements CriterioAlarma {
+    - temperaturaAlarmante : Double
+    - humedadAlarmante : Double
+    + esAlarmante(clima : Clima) : Boolean
+    + crearMensajeAlerta(clima : Clima) : String
+}
+
+interface Alertador {
+    + enviarAlerta(mensaje : String) : void
+}
+
+class AlertadorMail implements Alertador {
+    - mail : String
+    - mailService : MailService
+    + enviarAlerta(mensaje : String) : void
+}
+
+AlertadorMail --> MailService
+
+' ==== clima: obtencion y persistencia ====
+
+class WeatherApiClient {
+    - apiKey : String
+    - restClient : RestClient
+    ' llama a weatherapi.com, mapea la respuesta y arma un Clima
+    + obtenerClima(lugar : String) : Clima
+}
+
+class ClimaRepository <<Repository>> {
+    - climas : Clima[]
+    + guardar(clima : Clima) : void
+    + obtenerUltimo(lugar : String) : Optional<Clima>
+    + obtenerTodos() : Clima[]
+}
+
+class Clima <<record>> {
+    ubicacion : String
+    latitud : Double
+    longitud : Double
+    temperatura : Double
+    humidity : Double
+
+    ' arma el texto con todos los datos del clima, usado en el cuerpo del mail de alerta
+    + detalle() : String
+}
+
+class Lugar <<record>> {
+    nombre : String
+    latitud : double
+    longitud : double
+}
+
+WeatherApiClient ..> Lugar
+WeatherApiClient ..> Clima
+ClimaRepository --> "*" Clima
+
+' ==== envio de mails ====
+
+class MailService <<Service>> {
+    - emailProvider : EmailProvider
+    + enviarMail(direccion : String, mensaje : String) : void
+}
+
+interface EmailProvider {
+    + enviar(destinatario : String, asunto : String, cuerpo : String) : void
+}
+
+class SmtpEmailProvider implements EmailProvider {
+    - javaMailSender : JavaMailSender
+    + enviar(destinatario : String, asunto : String, cuerpo : String) : void
+}
+
+MailService --> EmailProvider
+
+@enduml
