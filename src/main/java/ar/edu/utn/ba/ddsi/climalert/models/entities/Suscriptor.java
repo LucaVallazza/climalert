@@ -30,13 +30,12 @@ public class Suscriptor {
     }
 
     private void alertarATodos(Clima clima){
-        alertadores.stream()
-                .forEach(alertador -> {
-                    String mensaje = criterios.stream()
-                            .map(criterio -> criterio.crearMensajeAlerta(clima))
-                            .collect(Collectors.joining("\n"));
-                    alertador.enviarAlerta(mensaje);
-                });
+        String motivos = criterios.stream()
+                .map(criterio -> criterio.crearMensajeAlerta(clima))
+                .collect(Collectors.joining("\n"));
+        String mensaje = motivos + "\n\n" + clima.detalle();
+
+        alertadores.forEach(alertador -> alertador.enviarAlerta(mensaje));
     }
 
 

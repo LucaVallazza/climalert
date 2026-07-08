@@ -2,11 +2,13 @@ package ar.edu.utn.ba.ddsi.climalert.models.entities;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -33,7 +35,11 @@ class SuscriptorTest {
 
         suscriptor.notificarClima(clima);
 
-        verify(alertador, times(1)).enviarAlerta("temperatura y humedad altas");
+        ArgumentCaptor<String> mensaje = ArgumentCaptor.forClass(String.class);
+        verify(alertador, times(1)).enviarAlerta(mensaje.capture());
+        assertThat(mensaje.getValue())
+                .contains("temperatura y humedad altas")
+                .contains(clima.detalle());
     }
 
     @Test
