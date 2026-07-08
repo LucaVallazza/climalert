@@ -5,6 +5,8 @@ import ar.edu.utn.ba.ddsi.climalert.models.entities.Clima;
 import ar.edu.utn.ba.ddsi.climalert.models.records.Lugar;
 import org.springframework.web.client.RestClient;
 
+import java.time.LocalTime;
+
 public class WeatherApiClient {
     private String apiKey;
     private final RestClient restClient;
@@ -21,6 +23,8 @@ public class WeatherApiClient {
     }
 
     public Clima obtenerClima(String lugar) {
+        System.out.println("[" + LocalTime.now().withNano(0) + "] pidiendole a weatherapi el clima de " + lugar + "...");
+
         WeatherApiResponse weatherApiResponse = restClient.get()
                 .uri("/current.json?key={key}&q={q}&aqi=no", apiKey, lugar)
                 .retrieve()
@@ -36,13 +40,17 @@ public class WeatherApiClient {
                 weatherApiResponse.location().lon()
         );
 
-        return new Clima(
+        Clima clima = new Clima(
                 ubicacion.nombre(),
                 ubicacion.latitud(),
                 ubicacion.longitud(),
                 weatherApiResponse.current().temp_c(),
                 weatherApiResponse.current().humidity() == null ? null : weatherApiResponse.current().humidity().doubleValue()
         );
+
+        System.out.println("[" + LocalTime.now().withNano(0) + "] llego el clima de " + lugar + " -> " + clima.temperatura() + "c, " + clima.humidity() + "% humedad");
+
+        return clima;
     }
 
 }

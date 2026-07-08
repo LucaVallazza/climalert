@@ -6,6 +6,7 @@ import ar.edu.utn.ba.ddsi.climalert.models.repositories.ClimaRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 @Service
@@ -27,7 +28,9 @@ public class WeatherService {
 
 	@Scheduled(fixedRate = 300000)
 	public void obtenerYGuardarClimas() {
+		System.out.println("[" + LocalTime.now().withNano(0) + "] arranca el fetch de los " + lugares.size() + " lugares");
 		lugares.stream().forEach(lugar -> guardarClima(weatherApiClient.obtenerClima(lugar)));
+		System.out.println("[" + LocalTime.now().withNano(0) + "] termino el fetch, ya deberian estar guardados");
 	}
 
 	public void guardarClima(Clima clima){

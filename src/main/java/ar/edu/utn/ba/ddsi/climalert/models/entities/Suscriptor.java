@@ -1,4 +1,5 @@
 package ar.edu.utn.ba.ddsi.climalert.models.entities;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -17,7 +18,10 @@ public class Suscriptor {
 
     private void analizarClima(Clima clima){
         if (this.cumpleCriterios(clima)){
+            System.out.println("[" + LocalTime.now().withNano(0) + "] clima alarmante en " + clima.ubicacion() + " -> " + clima.temperatura() + "c, " + clima.humidity() + "% humedad");
             alertarATodos(clima);
+        } else {
+            System.out.println("[" + LocalTime.now().withNano(0) + "] clima normal en " + clima.ubicacion() + " -> " + clima.temperatura() + "c, " + clima.humidity() + "% humedad");
         }
     }
 
